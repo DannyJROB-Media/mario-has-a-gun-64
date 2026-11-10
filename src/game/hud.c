@@ -13,6 +13,7 @@
 #include "area.h"
 #include "save_file.h"
 #include "print.h"
+#include "ge64.h"
 
 /* @file hud.c
  * This file implements HUD rendering and power meter animations.
@@ -455,8 +456,12 @@ void render_hud(void) {
 
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_CAMERA_AND_POWER) {
             render_hud_power_meter();
-            render_hud_camera_status();
+            if (!ge64_view_active()) {
+                render_hud_camera_status();
+            }
         }
+
+        ge64_render_hud();
 
         if (hudDisplayFlags & HUD_DISPLAY_FLAG_TIMER) {
             render_hud_timer();

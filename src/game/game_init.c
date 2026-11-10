@@ -9,6 +9,7 @@
 #include "buffers/zbuffer.h"
 #include "engine/level_script.h"
 #include "game_init.h"
+#include "ge64.h"
 #include "main.h"
 #include "memory.h"
 #include "profiler.h"
@@ -144,6 +145,25 @@ void init_z_buffer(void) {
 
     gDPFillRectangle(gDisplayListHead++, 0, BORDER_HEIGHT, SCREEN_WIDTH - 1,
                      SCREEN_HEIGHT - 1 - BORDER_HEIGHT);
+}
+
+/**
+ * GE64: clear the depth buffer mid-frame (before the first-person gun) and resume drawing to the
+ * current framebuffer.
+ */
+void ge64_clear_z_buffer(void) {
+    gDPPipeSync(gDisplayListHead++);
+    gDPSetCycleType(gDisplayListHead++, G_CYC_FILL);
+    gDPSetRenderMode(gDisplayListHead++, G_RM_NOOP, G_RM_NOOP2);
+    gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH, gPhysicalZBuffer);
+    gDPSetFillColor(gDisplayListHead++,
+                    GPACK_ZDZ(G_MAXFBZ, 0) << 16 | GPACK_ZDZ(G_MAXFBZ, 0));
+    gDPFillRectangle(gDisplayListHead++, 0, BORDER_HEIGHT, SCREEN_WIDTH - 1,
+                     SCREEN_HEIGHT - 1 - BORDER_HEIGHT);
+    gDPPipeSync(gDisplayListHead++);
+    gDPSetColorImage(gDisplayListHead++, G_IM_FMT_RGBA, G_IM_SIZ_16b, SCREEN_WIDTH,
+                     gPhysicalFramebuffers[sRenderingFramebuffer]);
+    gDPSetCycleType(gDisplayListHead++, G_CYC_1CYCLE);
 }
 
 /**
@@ -531,6 +551,8 @@ void read_controller_inputs(void) {
 #endif
     }
     run_demo_inputs();
+    // GE64: undo last frame's camera input mask so newly-pressed detection sees the real state
+    ge64_restore_controller();
 
     for (i = 0; i < 2; i++) {
         struct Controller *controller = &gControllers[i];

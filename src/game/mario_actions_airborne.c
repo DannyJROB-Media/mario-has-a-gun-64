@@ -13,6 +13,7 @@
 #include "mario_step.h"
 #include "save_file.h"
 #include "rumble_init.h"
+#include "ge64.h"
 
 void play_flip_sounds(struct MarioState *m, s16 frame1, s16 frame2, s16 frame3) {
     s32 animFrame = m->marioObj->header.gfx.animInfo.animFrame;
@@ -2071,6 +2072,7 @@ s32 mario_execute_airborne_action(struct MarioState *m) {
 
     /* clang-format off */
     switch (m->action) {
+        case ACT_FPS_AIR:              cancel = act_fps_air(m);              break;
         case ACT_JUMP:                 cancel = act_jump(m);                 break;
         case ACT_DOUBLE_JUMP:          cancel = act_double_jump(m);          break;
         case ACT_FREEFALL:             cancel = act_freefall(m);             break;

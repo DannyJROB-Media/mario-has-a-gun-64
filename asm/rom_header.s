@@ -29,7 +29,7 @@
 #ifdef VERSION_SH
 .ascii "SUPERMARIO64        "   /* Internal ROM name */
 #else
-.ascii "SUPER MARIO 64      "   /* Internal ROM name */
+.ascii "MARIO HAS A GUN 64  "   /* Internal ROM name */
 #endif
 .word  0x00000000               /* Unknown */
 .word  0x0000004E               /* Cartridge */

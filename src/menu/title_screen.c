@@ -123,7 +123,11 @@ s16 intro_level_select(void) {
 
     // Use file 4 and last act as a test
     gCurrSaveFileNum = 4;
+#ifdef GE64_LEVEL_SELECT
+    gCurrActNum = 1; // GE64: act 1 has the bosses
+#else
     gCurrActNum = 6;
+#endif
 
     print_text_centered(160, 80, "SELECT STAGE");
     print_text_centered(160, 30, "PRESS START BUTTON");

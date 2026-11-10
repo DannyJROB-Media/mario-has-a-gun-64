@@ -12,6 +12,7 @@
 #include "memory.h"
 #include "behavior_data.h"
 #include "rumble_init.h"
+#include "ge64.h"
 
 struct LandingAction {
     s16 numFrames;
@@ -1985,6 +1986,8 @@ s32 mario_execute_moving_action(struct MarioState *m) {
 
     /* clang-format off */
     switch (m->action) {
+        case ACT_FPS_GROUND:
+        case ACT_FPS_CROUCH:           cancel = act_fps_ground(m);           break;
         case ACT_WALKING:                  cancel = act_walking(m);                  break;
         case ACT_HOLD_WALKING:             cancel = act_hold_walking(m);             break;
         case ACT_HOLD_HEAVY_WALKING:       cancel = act_hold_heavy_walking(m);       break;

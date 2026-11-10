@@ -135,7 +135,8 @@ endif
 # COMPARE - whether to verify the SHA-1 hash of the ROM after building
 #   1 - verifies the SHA-1 hash of the selected version of the game
 #   0 - does not verify the hash
-COMPARE ?= 1
+# GE64: the hack never matches the original ROM
+COMPARE ?= 0
 $(eval $(call validate-option,COMPARE,0 1))
 
 TARGET_STRING := sm64.$(VERSION).$(GRUCODE)
@@ -174,6 +175,18 @@ endif
 
 DEFINES += _FINALROM=1
 
+# GE64: the hack needs the Expansion Pak (8MB) for its weapon models and other assets
+GE64_EXT_RAM ?= 1
+ifeq ($(GE64_EXT_RAM),1)
+  DEFINES += USE_EXT_RAM=1
+endif
+
+# GE64: GE64_LEVEL_SELECT=1 boots into the debug level select (for testing)
+GE64_LEVEL_SELECT ?= 0
+ifeq ($(GE64_LEVEL_SELECT),1)
+  DEFINES += GE64_LEVEL_SELECT=1
+endif
+
 #==============================================================================#
 # Universal Dependencies                                                       #
 #==============================================================================#
@@ -192,6 +205,10 @@ ifeq ($(filter clean distclean print-%,$(MAKECMDGOALS)),)
   NOEXTRACT ?= 0
   ifeq ($(NOEXTRACT),0)
     DUMMY != $(PYTHON) extract_assets.py $(VERSION) >&2 || echo FAIL
+    # GE64: the GoldenEye assets come from tools/ge64/setup.sh
+    ifeq ($(wildcard bin/ge64_pp7.c),)
+      $(error GoldenEye assets missing: run tools/ge64/setup.sh first (see README.md))
+    endif
     ifeq ($(DUMMY),FAIL)
       $(error Failed to extract assets)
     endif
@@ -218,6 +235,10 @@ endif
 #==============================================================================#
 
 BUILD_DIR_BASE := build
+# GE64: the level-select build gets its own build tree, so switching variants never mixes objects
+ifeq ($(GE64_LEVEL_SELECT),1)
+  BUILD_DIR_BASE := build_levelselect
+endif
 # BUILD_DIR is the location where all build artifacts are placed
 BUILD_DIR      := $(BUILD_DIR_BASE)/$(VERSION)
 ROM            := $(BUILD_DIR)/$(TARGET).z64

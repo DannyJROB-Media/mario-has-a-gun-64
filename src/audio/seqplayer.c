@@ -1669,7 +1669,7 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
                     case 0xc5: // chan_dynsetdyntable
                         if (value != -1) {
 #if defined(VERSION_EU) || defined(VERSION_SH) || defined(VERSION_CN)
-                            seqData = (*seqChannel->dynTable)[value];
+                            seqData = (*seqChannel->dynTable)[(u8) value]; // GE64: unsigned so sound IDs 0x80-0xFE work
                             sp38 = (u16)((seqData[0] << 8) + seqData[1]);
                             seqChannel->dynTable = (void *) (seqPlayer->seqData + sp38);
 #else
@@ -1942,7 +1942,7 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
                                 eu_stubbed_printf_0("Audio:Track: CTBLCALL Macro Level Over Error!\n");
                             }
 #endif
-                            seqData = (*seqChannel->dynTable)[value];
+                            seqData = (*seqChannel->dynTable)[(u8) value]; // GE64: unsigned so sound IDs 0x80-0xFE work
 #if defined(VERSION_EU) || defined(VERSION_SH) || defined(VERSION_CN)
                             state->stack[state->depth++] = state->pc;
                             sp38 = (u16)((seqData[0] << 8) + seqData[1]);
@@ -2095,7 +2095,7 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
 
                         case 0x98:
                             if (value != -1 && seq_channel_set_layer(seqChannel, loBits) != -1) {
-                                seqData = (*seqChannel->dynTable)[value];
+                                seqData = (*seqChannel->dynTable)[(u8) value]; // GE64: unsigned so sound IDs 0x80-0xFE work
                                 sp5A = ((seqData[0] << 8) + seqData[1]);
                                 seqChannel->layers[loBits]->scriptState.pc = seqPlayer->seqData + sp5A;
                             }
@@ -2174,7 +2174,7 @@ void sequence_channel_process_script(struct SequenceChannel *seqChannel) {
 
                     case 0xb0: // chan_dynsetlayer
                         if (value != -1 && seq_channel_set_layer(seqChannel, loBits) != -1) {
-                            seqData = (*seqChannel->dynTable)[value];
+                            seqData = (*seqChannel->dynTable)[(u8) value]; // GE64: unsigned so sound IDs 0x80-0xFE work
                             sp5A = ((seqData[0] << 8) + seqData[1]);
                             seqChannel->layers[loBits]->scriptState.pc = seqPlayer->seqData + sp5A;
                         }

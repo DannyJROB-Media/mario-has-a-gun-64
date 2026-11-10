@@ -1109,6 +1109,22 @@ SECTIONS
 
     /* load MIO0 and level data */
     MIO0_SEG(segment2, 0x02000000)
+    /* GE64 first-person gun models */
+    MIO0_SEG(ge64_pp7, 0x0E000000)
+    MIO0_SEG(ge64_kf7, 0x0E000000)
+    MIO0_SEG(ge64_dd44, 0x0E000000)
+    MIO0_SEG(ge64_klobb, 0x0E000000)
+    MIO0_SEG(ge64_zmg, 0x0E000000)
+    MIO0_SEG(ge64_d5k, 0x0E000000)
+    MIO0_SEG(ge64_phantom, 0x0E000000)
+    MIO0_SEG(ge64_ar33, 0x0E000000)
+    MIO0_SEG(ge64_rcp90, 0x0E000000)
+    MIO0_SEG(ge64_shotgun, 0x0E000000)
+    MIO0_SEG(ge64_autoshot, 0x0E000000)
+    MIO0_SEG(ge64_sniper, 0x0E000000)
+    MIO0_SEG(ge64_cougar, 0x0E000000)
+    MIO0_SEG(ge64_goldengun, 0x0E000000)
+    MIO0_SEG(ge64_laser, 0x0E000000)
 #ifdef VERSION_EU
     MIO0_EU_SEG(translation_en, 0x19000000)
     MIO0_EU_SEG(translation_fr, 0x19000000)

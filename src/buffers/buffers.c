@@ -11,7 +11,7 @@ ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200) - 0x4800];
 #elif defined(VERSION_CN)
 ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200) - 0x4C00];
 #else
-ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200)];
+ALIGNED16 u8 gAudioHeap[DOUBLE_SIZE_ON_64_BIT(0x31200 + 0x4000)]; // GE64: room for the GoldenEye sound bank
 #endif
 
 #ifdef VERSION_CN

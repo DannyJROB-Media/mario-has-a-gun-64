@@ -10,6 +10,7 @@
 #include "game/paintings.h"
 #include "menu/debug_level_select.h"
 #include "menu/intro_geo.h"
+#include "game/ge64.h"
 
 #include "make_const_nonconst.h"
 
@@ -63,6 +64,14 @@ const GeoLayout intro_geo_mario_head_regular[] = {
             GEO_CAMERA_FRUSTUM(45, 128, 16384),
             GEO_OPEN_NODE(),
                 GEO_ASM(2, geo_draw_mario_head_goddard),
+            GEO_CLOSE_NODE(),
+        GEO_CLOSE_NODE(),
+        // GE64: Mario holds up the PP7 (its own draw list, so it lands after the head)
+        GEO_ZBUFFER(1),
+        GEO_OPEN_NODE(),
+            GEO_CAMERA_FRUSTUM(45, 128, 16384),
+            GEO_OPEN_NODE(),
+                GEO_ASM(0, geo_ge64_title_gun),
             GEO_CLOSE_NODE(),
         GEO_CLOSE_NODE(),
 #ifdef VERSION_SH

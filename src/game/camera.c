@@ -28,6 +28,7 @@
 #include "paintings.h"
 #include "engine/graph_node.h"
 #include "level_table.h"
+#include "ge64.h"
 
 #define CBUTTON_MASK (U_CBUTTONS | D_CBUTTONS | L_CBUTTONS | R_CBUTTONS)
 
@@ -3518,7 +3519,11 @@ void update_graph_node_camera(struct GraphNodeCamera *gc) {
     gc->rollScreen = gLakituState.roll;
     vec3f_copy(gc->pos, gLakituState.pos);
     vec3f_copy(gc->focus, gLakituState.focus);
-    zoom_out_if_paused_and_outside(gc);
+    if (ge64_view_active()) {
+        ge64_update_graph_node_camera(gc);
+    } else {
+        zoom_out_if_paused_and_outside(gc);
+    }
 }
 
 Gfx *geo_camera_main(s32 callContext, struct GraphNode *g, void *context) {
@@ -11460,6 +11465,7 @@ Gfx *geo_camera_fov(s32 callContext, struct GraphNode *g, UNUSED void *context) 
 
     perspective->fov = sFOVState.fov;
     shake_camera_fov(perspective);
+    ge64_update_perspective(perspective);
     return NULL;
 }
 

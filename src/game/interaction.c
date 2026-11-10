@@ -23,6 +23,7 @@
 #include "sm64.h"
 #include "sound_init.h"
 #include "rumble_init.h"
+#include "ge64.h"
 
 #define INT_GROUND_POUND_OR_TWIRL (1 << 0) // 0x01
 #define INT_PUNCH                 (1 << 1) // 0x02
@@ -810,6 +811,8 @@ u32 interact_star_or_key(struct MarioState *m, UNUSED u32 interactType, struct O
 
         starIndex = (o->oBhvParams >> 24) & 0x1F;
         save_file_collect_star_or_key(m->numCoins, starIndex);
+        // GE64: every star rerolls the primary weapon
+        ge64_on_star_collected();
 
         m->numStars =
             save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
@@ -863,7 +866,8 @@ u32 interact_warp(struct MarioState *m, UNUSED u32 interactType, struct Object *
 
         } else if (!sJustTeleported) {
             if (action == ACT_IDLE || action == ACT_PANTING || action == ACT_STANDING_AGAINST_WALL
-                || action == ACT_CROUCHING) {
+                || action == ACT_CROUCHING
+                || (GE64_IS_FPS_GROUND(action) && m->forwardVel < 4.0f && m->forwardVel > -4.0f)) {
                 m->interactObj = o;
                 m->usedObj = o;
 
@@ -906,7 +910,7 @@ u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Obj
     s16 warpDoorId = o->oBhvParams >> 24;
     u32 actionArg;
 
-    if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
+    if (m->action == ACT_WALKING || m->action == ACT_DECELERATING || GE64_IS_FPS_GROUND(m->action)) {
         if (warpDoorId == 1 && !(saveFlags & SAVE_FLAG_UNLOCKED_UPSTAIRS_DOOR)) {
             if (!(saveFlags & SAVE_FLAG_HAVE_KEY_2)) {
                 if (!sDisplayingDoorText) {
@@ -936,7 +940,7 @@ u32 interact_warp_door(struct MarioState *m, UNUSED u32 interactType, struct Obj
             doorAction = ACT_UNLOCKING_KEY_DOOR;
         }
 
-        if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
+        if (m->action == ACT_WALKING || m->action == ACT_DECELERATING || GE64_IS_FPS_GROUND(m->action)) {
             actionArg = should_push_or_pull_door(m, o) + 0x00000004;
 
             if (doorAction == 0) {
@@ -1000,7 +1004,7 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
     s16 requiredNumStars = o->oBhvParams >> 24;
     s16 numStars = save_file_get_total_star_count(gCurrSaveFileNum - 1, COURSE_MIN - 1, COURSE_MAX - 1);
 
-    if (m->action == ACT_WALKING || m->action == ACT_DECELERATING) {
+    if (m->action == ACT_WALKING || m->action == ACT_DECELERATING || GE64_IS_FPS_GROUND(m->action)) {
         if (numStars >= requiredNumStars) {
             u32 actionArg = should_push_or_pull_door(m, o);
             u32 enterDoorAction;
@@ -1054,7 +1058,7 @@ u32 interact_door(struct MarioState *m, UNUSED u32 interactType, struct Object *
             sDisplayingDoorText = TRUE;
             return set_mario_action(m, ACT_READING_AUTOMATIC_DIALOG, text);
         }
-    } else if (m->action == ACT_IDLE && sDisplayingDoorText == TRUE && requiredNumStars == 70) {
+    } else if ((m->action == ACT_IDLE || GE64_IS_FPS_GROUND(m->action)) && sDisplayingDoorText == TRUE && requiredNumStars == 70) {
         m->interactObj = o;
         m->usedObj = o;
         return set_mario_action(m, ACT_ENTERING_STAR_DOOR, should_push_or_pull_door(m, o));
@@ -1462,7 +1466,7 @@ u32 interact_koopa_shell(struct MarioState *m, UNUSED u32 interactType, struct O
         u32 interaction = determine_interaction(m, o);
 
         if (interaction == INT_HIT_FROM_ABOVE || m->action == ACT_WALKING
-            || m->action == ACT_HOLD_WALKING) {
+            || m->action == ACT_HOLD_WALKING || GE64_IS_FPS_GROUND(m->action)) {
             m->interactObj = o;
             m->usedObj = o;
             m->riddenObj = o;

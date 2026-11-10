@@ -32,6 +32,7 @@
 #include "save_file.h"
 #include "sound_init.h"
 #include "rumble_init.h"
+#include "ge64.h"
 
 u32 unused80339F10;
 u8 unused80339F1C[20];
@@ -995,6 +996,9 @@ u32 set_mario_action(struct MarioState *m, u32 action, u32 actionArg) {
             break;
     }
 
+    // GE64: walking/jumping/idling become the first-person actions
+    action = ge64_remap_action(m, action);
+
     // Resets the sound played flags, meaning Mario can play those sound types again.
     m->flags &= ~(MARIO_ACTION_SOUND_PLAYED | MARIO_MARIO_SOUND_PLAYED);
 
@@ -1711,6 +1715,10 @@ s32 execute_mario_action(UNUSED struct Object *o) {
             return 0;
         }
 
+        // GE64: catch free-movement actions that were assigned directly rather than through
+        // set_mario_action (level entry, some cutscene exits)
+        gMarioState->action = ge64_remap_action(gMarioState, gMarioState->action);
+
         // The function can loop through many action shifts in one frame,
         // which can lead to unexpected sub-frame behavior. Could potentially hang
         // if a loop of actions were found, but there has not been a situation found.
@@ -1752,6 +1760,7 @@ s32 execute_mario_action(UNUSED struct Object *o) {
         update_mario_health(gMarioState);
         update_mario_info_for_cam(gMarioState);
         mario_update_hitbox_and_cap_model(gMarioState);
+        ge64_mario_post_update(gMarioState);
 
         // Both of the wind handling portions play wind audio only in
         // non-Japanese releases.

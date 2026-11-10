@@ -182,6 +182,10 @@ static u8 xIcon[] = { GLYPH_MULTIPLY, GLYPH_SPACE };
 
 #ifndef VERSION_EU
 static u8 textSelectFile[] = { TEXT_SELECT_FILE };
+// GE64: the file select header shows the hack's name, with "Select File" underneath
+static u8 textGe64Title[] = { 0x16, 0x0A, 0x1B, 0x12, 0x18, 0x9E, 0x11, 0x0A, 0x1C, 0x9E, 0x0A, 0x9E, 0x10, 0x1E, 0x17, 0x9E, 0x06, 0x04, 0xFF }; // "MARIO HAS A GUN 64"
+static u8 textGe64SelectFile[] = { 0x1C, 0x28, 0x2F, 0x28, 0x26, 0x37, 0x9E, 0x0F, 0x2C, 0x2F, 0x28, 0xFF }; // "Select File"
+
 #else
 static u8 textSelectFile[][17] = {{ TEXT_SELECT_FILE }, { TEXT_SELECT_FILE_FR }, { TEXT_SELECT_FILE_DE }};
 #endif
@@ -1876,7 +1880,7 @@ void print_main_menu_strings(void) {
     gSPDisplayList(gDisplayListHead++, dl_rgba16_text_begin);
     gDPSetEnvColor(gDisplayListHead++, 255, 255, 255, sTextBaseAlpha);
 #ifndef VERSION_EU
-    print_hud_lut_string(HUD_LUT_DIFF2, SELECT_FILE_X, SELECT_FILE_Y, textSelectFile);
+    print_hud_lut_string(HUD_LUT_DIFF2, 60, SELECT_FILE_Y - 8, textGe64Title);
 #endif
     // Print file star counts
     print_save_file_star_count(SAVE_FILE_A, SAVEFILE_X1, 78);
@@ -1895,6 +1899,7 @@ void print_main_menu_strings(void) {
     sSoundTextX = get_str_x_pos_from_center(254, textSoundModes[sSoundMode], 10.0f);
 #endif
     print_generic_string(SOUNDMODE_X1, 39, textSoundModes[sSoundMode]);
+    print_generic_string(get_str_x_pos_from_center(160, textGe64SelectFile, 10.0f), 182, textGe64SelectFile);
     gSPDisplayList(gDisplayListHead++, dl_ia_text_end);
 #endif
 

@@ -8768,3 +8768,6 @@ const f32 intro_seg7_table_0700C880[] = {
     0.048600f, 0.048600f, 0.012800f, 0.012800f,
     0.012800f, 0.000000f, 0.000000f, 0.000000f,
 };
+
+// GE64 title logo
+#include "levels/intro/ge64_logo.inc.c"

@@ -156,6 +156,7 @@ define level_rules =
     $(1)_SEG7_FILES     := $$(patsubst %.png,%.inc.c,$$(wildcard levels/$(1)/*.png))
     $$(BUILD_DIR)/levels/$(1)/leveldata.o: $$(addprefix $$(BUILD_DIR)/,$$($(1)_SEG7_FILES))
     $$(BUILD_DIR)/levels/$(1)/leveldata.elf: TEXTURE_BIN := $(2)
+    $$(BUILD_DIR)/levels/$(1)/leveldata.elf: $$(BUILD_DIR)/bin/$(2).elf
 endef
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -231,6 +232,8 @@ $(BUILD_DIR)/bin/segment2.elf:           SEGMENT_ADDRESS := 0x02000000
 $(BUILD_DIR)/bin/title_screen_bg.elf:    SEGMENT_ADDRESS := 0x0A000000
 $(BUILD_DIR)/bin/debug_level_select.elf: SEGMENT_ADDRESS := 0x07000000
 $(BUILD_DIR)/bin/effect.elf:             SEGMENT_ADDRESS := 0x0B000000
+# GE64: first-person gun models (loaded into the gun buffer, drawn with segment 0x0E pointed at it)
+$(BUILD_DIR)/bin/ge64_%.elf:             SEGMENT_ADDRESS := 0x0E000000
 $(BUILD_DIR)/bin/spooky.elf:             SEGMENT_ADDRESS := 0x09000000
 $(BUILD_DIR)/bin/generic.elf:            SEGMENT_ADDRESS := 0x09000000
 $(BUILD_DIR)/bin/outside.elf:            SEGMENT_ADDRESS := 0x09000000

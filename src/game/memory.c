@@ -320,6 +320,48 @@ void *load_to_fixed_pool_addr(u8 *destAddr, u8 *srcStart, u8 *srcEnd) {
 }
 
 /**
+ * GE64: decompress an MIO0 ROM block into an existing buffer (the first-person gun buffer).
+ * Returns the decompressed size, or 0 if it doesn't fit.
+ */
+u32 ge64_load_mio0_into(void *dest, u32 capacity, u8 *srcStart, u8 *srcEnd) {
+    u32 compSize = ALIGN16(srcEnd - srcStart);
+    u8 *compressed = main_pool_alloc(compSize, MEMORY_POOL_RIGHT);
+    u32 size = 0;
+
+    if (compressed != NULL) {
+        dma_read(compressed, srcStart, srcEnd);
+        size = *(u32 *) (compressed + 4);
+        if (size <= capacity) {
+            decompress(compressed, dest);
+            osWritebackDCache(dest, size);
+        } else {
+            size = 0;
+        }
+        main_pool_free(compressed);
+    }
+    return size;
+}
+
+/**
+ * GE64: as above, but with a caller-provided buffer for the compressed data (no pool use).
+ */
+u32 ge64_load_mio0_with_scratch(void *dest, u32 capacity, u8 *scratch, u32 scratchSize, u8 *srcStart, u8 *srcEnd) {
+    u32 size;
+
+    if (ALIGN16(srcEnd - srcStart) > scratchSize) {
+        return 0;
+    }
+    dma_read(scratch, srcStart, srcEnd);
+    size = *(u32 *) (scratch + 4);
+    if (size > capacity) {
+        return 0;
+    }
+    decompress(scratch, dest);
+    osWritebackDCache(dest, size);
+    return size;
+}
+
+/**
  * Decompress the block of ROM data from srcStart to srcEnd and return a
  * pointer to an allocated buffer holding the decompressed data. Set the
  * base address of segment to this address.

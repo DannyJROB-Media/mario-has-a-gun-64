@@ -59,6 +59,8 @@ u32 main_pool_pop_state(void);
 void *load_segment(s32 segment, u8 *srcStart, u8 *srcEnd, u32 side);
 void *load_to_fixed_pool_addr(u8 *destAddr, u8 *srcStart, u8 *srcEnd);
 void *load_segment_decompress(s32 segment, u8 *srcStart, u8 *srcEnd);
+u32 ge64_load_mio0_into(void *dest, u32 capacity, u8 *srcStart, u8 *srcEnd);
+u32 ge64_load_mio0_with_scratch(void *dest, u32 capacity, u8 *scratch, u32 scratchSize, u8 *srcStart, u8 *srcEnd);
 void *load_segment_decompress_heap(u32 segment, u8 *srcStart, u8 *srcEnd);
 void load_engine_code_segment(void);
 #else

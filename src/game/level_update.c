@@ -5,6 +5,7 @@
 #include "dialog_ids.h"
 #include "audio/external.h"
 #include "level_update.h"
+#include "ge64.h"
 #include "game_init.h"
 #include "level_update.h"
 #include "main.h"
@@ -1156,6 +1157,8 @@ s32 init_level(void) {
     s32 val4 = FALSE;
 
     set_play_mode(PLAY_MODE_NORMAL);
+    // GE64: the gun model buffer lives in the level's pool context (freed when the level unloads)
+    ge64_level_init();
 
     sDelayedWarpOp = WARP_OP_NONE;
     sTransitionTimer = 0;

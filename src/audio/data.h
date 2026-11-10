@@ -140,7 +140,8 @@ extern OSMesgQueue *D_SH_80350FA8;
 #define AUDIO_INIT_POOL_SIZE 0x2c00
 #else
 #define UNUSED_COUNT_80333EE8 16
-#define AUDIO_HEAP_SIZE 0x31150
+// GE64: +0x4000 so sequence 0 can hold the GoldenEye sound bank (persistentBankMem raised to match)
+#define AUDIO_HEAP_SIZE (0x31150 + 0x4000)
 #define AUDIO_INIT_POOL_SIZE 0x2500
 #endif
 

@@ -1,192 +1,109 @@
-# Super Mario 64
+# Mario Has a Gun 64
 
-- This repo contains a full decompilation of Super Mario 64 of the following releases: Japan (jp), North America (us), Europe (eu), Shindou (sh) and iQue Player (cn).
-- Naming and documentation of the source code and data structures are in progress.
+GoldenEye 007's first-person shooting, inside Super Mario 64.
 
-It builds the following ROMs:
+It's still the whole of Super Mario 64: its levels, music, enemies, bosses and star progression. The
+difference is that you play in first person with GoldenEye's guns, gun sounds and controls.
 
-* sm64.jp.z64 `sha1: 8a20a5c83d6ceb0f0506cfc9fa20d8f438cafe51`
-* sm64.us.z64 `sha1: 9bef1128717f958171a4afac3ed78ee2bb4e86ce`
-* sm64.eu.z64 `sha1: 4ac5721683d0e0b6bbb561b58a71740845dceea9`
-* sm64.sh.z64 `sha1: 3f319ae697533a255a1003d09202379d78d5a2e0`
-* sm64.cn.z64 `sha1: 2e1db2780985a1f068077dc0444b685f39cd90ec`
+- **15 GoldenEye weapons**, using the original gun models held in Mario's glove. Your PP7 sidearm is
+  always with you. Your primary weapon is random, and every star you collect rerolls it (DD44, Klobb,
+  KF7 Soviet, ZMG, D5K, Phantom, AR33, RCP-90, Shotgun, Automatic Shotgun, Sniper Rifle, Cougar
+  Magnum, Golden Gun, Moonraker Laser).
+- **Shot enemies die.** Invincible enemies such as the Chain Chomp get knocked back, and bigger guns
+  knock them back harder.
+- **Bosses still play out their own way.** King Bob-omb gets knocked down, King Whomp is shot in the
+  back, and you blast Bowser into the bombs (more damage from behind).
+- **Gun jump.** Shoot the floor at your feet to launch yourself. This takes the place of the long jump.
+- **Mario stays Mario.** You keep his power meter, his HUD and his voice, and he wears a tuxedo.
+  Doors, cutscenes and the star dance switch to the normal third-person camera.
 
-This repo does not include all assets necessary for compiling the ROMs.
-A prior copy of the game is required to extract the assets.
+**Requires the Expansion Pak.** Tested on real hardware (Analogue 3D with a SummerCart64) and in
+[ares](https://ares-emu.net/).
 
-## Quick Start (for Ubuntu)
+## Controls
 
-1. Install prerequisites: `sudo apt install -y binutils-mips-linux-gnu build-essential git pkgconf python3`
-2. Clone the repo from within Linux: `git clone https://github.com/n64decomp/sm64.git`
-3. Place a Super Mario 64 ROM called `baserom.<VERSION>.z64` into the project folder for asset extraction, where `VERSION` can be `jp`, `us`, `eu`, `sh`, or `cn`.
-4. Run `make` to build. Specify the version through `make VERSION=<VERSION>`. Add `-j4` to improve build speed (hardware dependent).
+GoldenEye 1.1 ("Honey") style:
 
-Ensure the repo path length does not exceed 255 characters. Long path names result in build errors.
+| Input | Action |
+| --- | --- |
+| Control Stick | Walk forward/back, turn |
+| C-Left / C-Right | Strafe |
+| C-Up / C-Down | Look up / down |
+| Z | Fire |
+| R (hold) | Aim (scope on the AR33 and sniper rifle) |
+| R + C-Down / R + C-Up | Crouch / stand |
+| A | Jump (while crouched: triple-jump height) |
+| B | Reload |
+| L | Switch between sidearm and primary weapon |
 
-## Installation
+## Building
 
-### Windows
+This repository contains **no game assets**. You need your own legally obtained ROMs of:
 
-Install WSL and a distro of your choice following
-[Windows Subsystem for Linux Installation Guide for Windows 10.](https://docs.microsoft.com/en-us/windows/wsl/install-win10)
-We recommend either Debian or Ubuntu 18.04 Linux distributions under WSL.
-Note: WSL1 does not currently support Ubuntu 20.04.
+| Game | File | SHA-1 |
+| --- | --- | --- |
+| Super Mario 64 (USA) | `baserom.us.z64` | `9bef1128717f958171a4afac3ed78ee2bb4e86ce` |
+| GoldenEye 007 (USA) | `baserom.ge.us.z64` | `abe01e4aeb033b6c0836819f549c791b26cfde83` |
 
-Next, clone the SM64 repo from within the Linux shell:
-`git clone https://github.com/n64decomp/sm64.git`
+Both ROMs must be in `.z64` (big-endian) byte order.
 
-Then continue following the directions in the [Linux](#linux) installation section below.
+The build has been tested on Debian/Ubuntu Linux; WSL should also work. Install the Super Mario 64 decomp
+dependencies (see [README.decomp.md](README.decomp.md)), plus Pillow, sox and a 32-bit host compiler:
 
-### Linux
-
-There are 3 steps to set up a working build.
-
-#### Step 1: Install dependencies
-
-The build system has the following package requirements:
- * binutils-mips
- * pkgconf
- * python3 >= 3.6
-
-Dependency installation instructions for common Linux distros are provided below:
-
-##### Debian / Ubuntu
-To install build dependencies:
-```
-sudo apt install -y binutils-mips-linux-gnu build-essential git pkgconf python3
+```sh
+sudo apt install build-essential git binutils-mips-linux-gnu python3 python3-pil gcc-multilib sox
 ```
 
-##### Arch Linux
-To install build dependencies:
-```
-sudo pacman -S base-devel python
-```
-Install the following AUR packages:
-* [mips64-elf-binutils](https://aur.archlinux.org/packages/mips64-elf-binutils) (AUR)
+Then:
 
-##### Other Linux distributions
-
-Most modern Linux distributions should have equivalent packages to the other two listed above.
-You may have to use a different version of GNU binutils. Listed below are fully compatible binutils
-distributions with support in the makefile, and examples of distros that offer them:
-
-* `mips64-elf-` (Arch AUR)
-* `mips-linux-gnu-` (Ubuntu and other Debian-based distros)
-* `mips64-linux-gnu-` (RHEL/CentOS/Fedora)
-
-You may also use [Docker](#docker-installation) to handle installing an image with minimal dependencies.
-
-#### Step 2: Copy baserom(s) for asset extraction
-
-For each version (jp/us/eu/sh/cn) for which you want to build a ROM, put an existing ROM at
-`./baserom.<VERSION>.z64` for asset extraction.
-
-##### Step 3: Build the ROM
-
-Run `make` to build the ROM (defaults to `VERSION=us`).
-Other examples:
-```
-make VERSION=jp -j4       # build (J) version instead with 4 jobs
-make VERSION=eu COMPARE=0 # build (EU) version but do not compare ROM hashes
+```sh
+git clone <this repo> mario-has-a-gun-64
+cd mario-has-a-gun-64
+cp /path/to/sm64_us.z64 baserom.us.z64
+cp /path/to/goldeneye_us.z64 baserom.ge.us.z64
+tools/ge64/setup.sh        # extracts and converts assets from both ROMs (one time, a few minutes)
+make -j$(nproc)
 ```
 
-Resulting artifacts can be found in the `build` directory.
+The ROM is written to `build/us/sm64.us.z64`.
 
-The full list of configurable variables are listed below, with the default being the first listed:
+`setup.sh` clones the [GoldenEye 007 decomp](https://github.com/n64decomp/007) (at a pinned commit)
+into `tools/ge64/007` and uses it to extract the gun models and sound effects from your GoldenEye ROM.
+If you already have a 007 checkout, you can point to it with `GE_DECOMP=/path/to/007`.
 
-* ``VERSION``: ``jp``, ``us``, ``eu``, ``sh``, ``cn``
-* ``GRUCODE``: ``f3d_old``, ``f3d_new``, ``f3dex``, ``f3dex2``, ``f3dzex``
-* ``COMPARE``: ``1`` (compare ROM hash), ``0`` (do not compare ROM hash)
-* ``NON_MATCHING``: Use functionally equivalent C implementations for non-matchings. Also will avoid instances of undefined behavior.
-* ``CROSS``: Cross-compiler tool prefix (Example: ``mips64-elf-``).
+### Debug build
 
-### macOS
+`make GE64_LEVEL_SELECT=1 -j$(nproc)` builds into `build_levelselect/`. This build boots into the level
+select and adds testing helpers on the D-pad:
 
-With macOS, you may either use Homebrew or [Docker](#docker-installation).
+| Input | Effect |
+| --- | --- |
+| D-Up | Spawn a Goomba |
+| L + D-Up | Hit the nearest boss five times |
+| D-Down | Teleport to the nearest boss |
+| D-Left | Teleport to the nearest door |
+| D-Right | Reroll the primary weapon |
+| L + D-Right | Teleport to the nearest star |
 
-#### Homebrew
+## Where things are
 
-#### Step 1: Install dependencies
-Install [Homebrew](https://brew.sh) and the following dependencies:
-```
-brew update
-brew install coreutils make pkg-config tehzz/n64-dev/mips64-elf-binutils
-```
+| Path | Contents |
+| --- | --- |
+| `src/game/ge64.c` | First-person movement and camera, weapons, hitscan, viewmodel, HUD, title-screen gun |
+| `src/game/ge64_bosses.c` | Boss adaptations, which route shots into each boss's original defeat logic |
+| `src/game/ge64_guns/poses.inc.h` | Where the glove holds each gun |
+| `tools/ge64/` | Asset pipeline: GoldenEye gun model and texture conversion, sound-bank extraction, title art |
+| `levels/intro/ge64_logo.inc.c` | The 3D title logo (generated by `tools/ge64/gen_logo3d.py`) |
 
-#### Step 2: Copy baserom(s) for asset extraction
+Hooks into the original game are kept small and are marked `GE64` in the source.
 
-For each version (jp/us/eu/sh/cn) for which you want to build a ROM, put an existing ROM at
-`./baserom.<VERSION>.z64` for asset extraction.
+## Credits
 
-##### Step 3: Build the ROM
-
-Use Homebrew's GNU make because the version included with macOS is too old.
-
-```
-gmake VERSION=jp -j4       # build (J) version instead with 4 jobs
-```
-
-### Docker Installation
-
-#### Create Docker image
-
-After installing and starting Docker, create the docker image. This only needs to be done once.
-```
-docker build -t sm64 .
-```
-
-#### Build
-
-To build, mount the local filesystem into the Docker container and build the ROM with `docker run sm64 make`.
-
-##### macOS example for (U):
-```
-docker run --rm --mount type=bind,source="$(pwd)",destination=/sm64 sm64 make VERSION=us -j4
-```
-
-##### Linux example for (U):
-For a Linux host, Docker needs to be instructed which user should own the output files:
-```
-docker run --rm --mount type=bind,source="$(pwd)",destination=/sm64 --user $UID:$GID sm64 make VERSION=us -j4
-```
-
-Resulting artifacts can be found in the `build` directory.
-
-## Project Structure
-
-	sm64
-	├── actors: object behaviors, geo layout, and display lists
-	├── asm: handwritten assembly code, rom header
-	│   └── non_matchings: asm for non-matching sections
-	├── assets: animation and demo data
-	│   ├── anims: animation data
-	│   └── demos: demo data
-	├── bin: C files for ordering display lists and textures
-	├── build: output directory
-	├── data: behavior scripts, misc. data
-	├── doxygen: documentation infrastructure
-	├── enhancements: example source modifications
-	├── include: header files
-	├── levels: level scripts, geo layout, and display lists
-	├── lib: SDK library code
-	├── rsp: audio and Fast3D RSP assembly code
-	├── sound: sequences, sound samples, and sound banks
-	├── src: C source code for game
-	│   ├── audio: audio code
-	│   ├── buffers: stacks, heaps, and task buffers
-	│   ├── engine: script processing engines and utils
-	│   ├── game: behaviors and rest of game source
-	│   ├── goddard: Mario intro screen
-	│   └── menu: title screen and file, act, and debug level selection menus
-	├── text: dialog, level names, act names
-	├── textures: skybox and generic texture data
-	└── tools: build tools
-
-## Contributing
-
-Pull requests are welcome. For major changes, please open an issue first to
-discuss what you would like to change.
-
-Run `clang-format` on your code to ensure it meets the project's coding standards.
-
-Official Discord: [discord.gg/DuYH3Fh](https://discord.gg/DuYH3Fh)
+- **Mario Has a Gun 64** by Danny ([DannyJROB-Media](https://github.com/DannyJROB-Media)), built
+  with Claude Code.
+- Built on the [Super Mario 64 decompilation](https://github.com/n64decomp/sm64) and the
+  [GoldenEye 007 decompilation](https://github.com/n64decomp/007) by the n64decomp contributors.
+  GoldenEye's texture decompressor (`tools/ge64/getex/image.c`) is adapted from the 007 decomp.
+- Super Mario 64 is © Nintendo. GoldenEye 007 is © Nintendo / Rare / MGM / Danjaq. This is an
+  unofficial fan project, not affiliated with or endorsed by any of them. No ROMs or assets from
+  either game are included in or distributed by this repository.

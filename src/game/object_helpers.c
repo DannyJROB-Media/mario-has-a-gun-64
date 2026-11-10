@@ -22,6 +22,7 @@
 #include "memory.h"
 #include "obj_behaviors.h"
 #include "object_helpers.h"
+#include "ge64_bosses.h"
 #include "object_list_processor.h"
 #include "rendering_graph_node.h"
 #include "spawn_object.h"
@@ -2179,6 +2180,10 @@ s32 cur_obj_wait_then_blink(s32 timeUntilBlinking, s32 numBlinks) {
 }
 
 s32 cur_obj_is_mario_ground_pounding_platform(void) {
+    // GE64: enough shots into a whomp's back or a wooden post count as a ground pound
+    if (ge64_take_pending_pound(o)) {
+        return TRUE;
+    }
     if (gMarioObject->platform == o) {
         if (gMarioStates[0].action == ACT_GROUND_POUND_LAND) {
             return TRUE;

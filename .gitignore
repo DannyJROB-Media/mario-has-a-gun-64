@@ -70,3 +70,16 @@ build/*
 !/sound/**/*custom*/**/*.aiff
 !/assets/**/*custom*.bin
 !/assets/**/*custom*/**/*.bin
+
+# Mario Has a Gun 64: generated from the player's ROMs by tools/ge64/setup.sh
+/baserom.ge.us.z64
+/build_levelselect/
+/bin/ge64_*.c
+/src/game/ge64_guns/*.inc.h
+!/src/game/ge64_guns/poses.inc.h
+/src/game/ge64_glove.inc.h
+/sound/samples/sfx_custom_ge/
+/tools/ge64/007/
+/tools/ge64/getex/getex
+/tools/ge64/getex/*.o
+__pycache__/
