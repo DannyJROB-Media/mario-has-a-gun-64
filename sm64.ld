@@ -501,6 +501,9 @@ SECTIONS
 #endif
         BUILD_DIR/lib/rsp.o(.text);
 #else
+        /* GE64: listed explicitly so the link order doesn't depend on directory order */
+        BUILD_DIR/src/game/ge64.o(.text);
+        BUILD_DIR/src/game/ge64_bosses.o(.text);
         BUILD_DIR/src/game*.o(.text);
         BUILD_DIR/src/audio*.o(.text);
         BUILD_DIR/libultra.a:parameters.o(.text);
@@ -671,6 +674,9 @@ SECTIONS
         BUILD_DIR/src/game/obj_behaviors_2.o(.data*);
 #ifndef VERSION_EU
         /* wildcard doesn't match on EU due to files being moved to engine/ */
+        /* GE64: listed explicitly so the link order doesn't depend on directory order */
+        BUILD_DIR/src/game/ge64.o(.data*);
+        BUILD_DIR/src/game/ge64_bosses.o(.data*);
         BUILD_DIR/src/game*.o(.data*);
 #endif
 #if defined(VERSION_SH) || defined(VERSION_CN)
@@ -811,6 +817,9 @@ SECTIONS
         BUILD_DIR/src/game/obj_behaviors.o(.rodata*);
         BUILD_DIR/src/game/obj_behaviors_2.o(.rodata*);
 #if defined(VERSION_JP) || defined(VERSION_US)
+        /* GE64: listed explicitly so the link order doesn't depend on directory order */
+        BUILD_DIR/src/game/ge64.o(.rodata*);
+        BUILD_DIR/src/game/ge64_bosses.o(.rodata*);
         BUILD_DIR/src/game*.o(.rodata*);
 #endif
 #if defined(VERSION_SH) || defined(VERSION_CN)
@@ -933,6 +942,9 @@ SECTIONS
         BUILD_DIR/src/game/obj_behaviors.o(.bss*);
         BUILD_DIR/src/game/obj_behaviors_2.o(.bss*);
 #if !defined(VERSION_EU) && !defined(VERSION_CN)
+        /* GE64: listed explicitly so the link order doesn't depend on directory order */
+        BUILD_DIR/src/game/ge64.o(.bss*);
+        BUILD_DIR/src/game/ge64_bosses.o(.bss*);
         BUILD_DIR/src/game*.o(.bss*);
 #endif
         BUILD_DIR/src/audio/external.o(.bss*);

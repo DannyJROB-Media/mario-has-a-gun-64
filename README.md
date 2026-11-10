@@ -47,7 +47,7 @@ This repository contains **no game assets**. You need your own legally obtained 
 
 Both ROMs must be in `.z64` (big-endian) byte order.
 
-Fully tested on Debian 13 (GCC 14); on Arch Linux (GCC 16) the setup and build tools are tested. Windows users can try WSL with the Debian/Ubuntu
+Tested on Debian 13 (GCC 14) and Arch Linux (GCC 16). Windows users can try WSL with the Debian/Ubuntu
 steps (untested). macOS isn't supported yet: GoldenEye's texture decompressor has to be built as a
 32-bit program, which macOS can no longer do.
 
@@ -79,7 +79,9 @@ tools/ge64/setup.sh        # extracts and converts assets from both ROMs (one ti
 make -j$(nproc)
 ```
 
-The ROM is written to `build/us/sm64.us.z64`.
+The ROM is written to `build/us/sm64.us.z64`. The build is reproducible: on both tested systems the
+current version comes out with SHA-1 `8a0706aa4ddc24abdee8928c819d58d76d228971`. If yours differs, it
+may still work fine, but please mention it when you report a problem.
 
 `setup.sh` clones the [GoldenEye 007 decomp](https://github.com/n64decomp/007) (at a pinned commit)
 into `tools/ge64/007` and uses it to extract the gun models and sound effects from your GoldenEye ROM.
