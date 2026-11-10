@@ -80,7 +80,7 @@ make -j$(nproc)
 ```
 
 The ROM is written to `build/us/sm64.us.z64`. The build is reproducible: on both tested systems the
-current version comes out with SHA-1 `8a0706aa4ddc24abdee8928c819d58d76d228971`. If yours differs, it
+current version comes out with SHA-1 `7ffe962ad135cabb11678d39beb8431b4387e32a`. If yours differs, it
 may still work fine, but please mention it when you report a problem.
 
 `setup.sh` clones the [GoldenEye 007 decomp](https://github.com/n64decomp/007) (at a pinned commit)

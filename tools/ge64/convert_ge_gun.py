@@ -33,6 +33,18 @@ PASSTHROUGH = {
     'gsDPSetCombineKey', 'gsDPSetAlphaCompare', 'gsDPSetColorDither', 'gsDPSetAlphaDither',
 }
 
+def _avg(a, b):
+    return tuple((a[i] + b[i] + 1) // 2 for i in range(4))
+
+def add_shift(arg, extra):
+    """Combine a tile shift (0: none, 1-10: coords >> n, 11-15: coords << (16-n)) with an extra >> extra."""
+    if extra == 0:
+        return arg
+    s = 0 if arg == 'G_TX_NOLOD' else int(arg, 0)
+    net = (-s if s <= 10 else 16 - s) - extra  # net exponent of the coordinate scale
+    assert -10 <= net <= 5, (arg, extra)
+    return str(16 - net if net > 0 else -net)
+
 def log2(n):
     return max(0, (n - 1).bit_length())
 
@@ -66,7 +78,19 @@ def main(gun, ident, repo):
             w, h = nw, nh
         kind = texture_alpha_kind(pix)
         cname = 'ge64_%s_tex_%s' % (ident, name.replace('IMAGE_', '').lower())
-        tex_info[name] = (cname, w, h, kind)
+        # TMEM holds 4KB. GE's originals are smaller formats (CI4/CI8/IA); as RGBA16/32 some exceed
+        # that, and loading past the end of TMEM is undefined on the RDP (corruption or a hang on
+        # hardware). Halve the larger axis until it fits; the tile shift scales the coordinates.
+        sx = sy = 0
+        while w * h * (4 if kind == 'blend' else 2) > 4096:
+            if w >= h:
+                pix = [_avg(pix[y * w + x], pix[y * w + x + 1]) for y in range(h) for x in range(0, w, 2)]
+                w //= 2; sx += 1
+            else:
+                pix = [_avg(pix[y * w + x], pix[(y + 1) * w + x]) for y in range(0, h, 2) for x in range(w)]
+                h //= 2; sy += 1
+        # (kind stays as classified before scaling: averaging cutout edges must not turn it into RGBA32)
+        tex_info[name] = (cname, w, h, kind, sx, sy)
         if kind == 'blend':
             # Soft alpha (muzzle flash glow) needs RGBA32; 32x32 still fits TMEM
             vals = [(r << 24) | (g << 16) | (b << 8) | a for r, g, b, a in pix]
@@ -134,11 +158,12 @@ def main(gun, ident, repo):
                 lines.append('gsSPVertex(%s, %s, %s)' % (vtx_ref(int(args[0], 0)), args[1], args[2]))
             elif cmd == 'gsSPUseTexture':
                 cms, cmt, tile, shifts, shiftt, ttype, minlevel, detail, tex = args
-                cname, w, h, kind = tex_info[tex]
+                cname, w, h, kind, sx, sy = tex_info[tex]
                 cur_tex_kind = kind
                 siz = 'G_IM_SIZ_32b' if kind == 'blend' else 'G_IM_SIZ_16b'
                 lines.append('gsDPLoadTextureBlock(%s, G_IM_FMT_RGBA, %s, %d, %d, 0, %s, %s, %d, %d, %s, %s)'
-                             % (cname, siz, w, h, cms, cmt, log2(w), log2(h), shifts, shiftt))
+                             % (cname, siz, w, h, cms, cmt, log2(w), log2(h),
+                                add_shift(shifts, sx), add_shift(shiftt, sy)))
             elif cmd in ('gsSP1Triangle', 'gsSP2Triangles', 'gsSP4Triangles'):
                 nums = [int(a, 0) for a in args]
                 if cmd == 'gsSP1Triangle':
