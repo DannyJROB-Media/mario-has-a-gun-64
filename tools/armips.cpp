@@ -1603,6 +1603,7 @@ bool isAbsolutePath(const std::wstring& path);
 
 // file: Util/FileClasses.h
 #include <list>
+#include <cstdint> // GE64: needed explicitly since GCC 13
 
 class BinaryFile
 {

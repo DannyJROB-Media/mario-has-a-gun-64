@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Import GoldenEye sound effects into the SM64 decomp's sound player (sequence 0).
 
-- Resamples each decoded GE wav to 32 kHz mono AIFF in sound/samples/sfx_custom_ge/
+- Resamples each decoded GE wav (tools/ge64/resample.py) to 32 kHz mono AIFF in sound/samples/sfx_custom_ge/
   (the build converts AIFF to VADPCM; 32 kHz means tuning 1.0, so note 39 plays at natural pitch)
 - Writes sound/sound_banks/26_custom_ge.json with one instrument per sample
 - Adds the bank to sequence 0 in sound/sequences.json
@@ -11,7 +11,10 @@
 
 Re-running replaces everything between the GE64 markers, so it is idempotent.
 """
-import json, os, re, subprocess, sys, wave, math
+import json, os, re, sys, math
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from resample import convert_wav
 
 SM64 = sys.argv[1]
 SFX_DIR = sys.argv[2]  # decoded GE wavs named NNN_NAME.wav
@@ -84,10 +87,8 @@ def main():
         sample = '%02d_%s' % (i, name.lower())
         src = find_wav(idx)
         dst = os.path.join(sample_dir, sample + '.aiff')
-        # -D: no dither, so the samples (and the ROM) come out the same on every machine
-        subprocess.run(['sox', '-D', src, '-r', '32000', '-b', '16', '-c', '1', dst], check=True)
-        with wave.open(src) as w:
-            durations.append(w.getnframes() / w.getframerate())
+        # pure-Python resampler: byte-identical output on every machine (sox builds differ)
+        durations.append(convert_wav(src, dst, 32000))
         instruments['inst%d' % i] = {'release_rate': 208, 'envelope': 'envelope0', 'sound': sample}
         inst_list.append('inst%d' % i)
 

@@ -47,12 +47,26 @@ This repository contains **no game assets**. You need your own legally obtained 
 
 Both ROMs must be in `.z64` (big-endian) byte order.
 
-The build has been tested on Debian/Ubuntu Linux; WSL should also work. Install the Super Mario 64 decomp
-dependencies (see [README.decomp.md](README.decomp.md)), plus Pillow, sox and a 32-bit host compiler:
+Fully tested on Debian 13 (GCC 14); on Arch Linux (GCC 16) the setup and build tools are tested. Windows users can try WSL with the Debian/Ubuntu
+steps (untested). macOS isn't supported yet: GoldenEye's texture decompressor has to be built as a
+32-bit program, which macOS can no longer do.
+
+**Debian / Ubuntu:**
 
 ```sh
-sudo apt install build-essential git binutils-mips-linux-gnu python3 python3-pil gcc-multilib sox
+sudo apt install build-essential git binutils-mips-linux-gnu python3 python3-pil gcc-multilib
 ```
+
+**Arch Linux:** enable the `[multilib]` repository in `/etc/pacman.conf`, then:
+
+```sh
+sudo pacman -S base-devel git python python-pillow lib32-glibc lib32-gcc-libs
+```
+
+and install [mips64-elf-binutils](https://aur.archlinux.org/packages/mips64-elf-binutils) from the AUR.
+
+For other distributions, see [README.decomp.md](README.decomp.md). You'll also need Pillow for Python,
+and a gcc that can build 32-bit programs (`-m32`).
 
 Then:
 

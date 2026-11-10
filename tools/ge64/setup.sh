@@ -44,7 +44,6 @@ say "Checking ROMs and tools"
 check_rom "$SM64_ROM" $SM64_SHA1 "Super Mario 64 (US) ROM"
 check_rom "$GE_ROM" $GE_SHA1 "GoldenEye 007 (US) ROM"
 command -v git >/dev/null || die "git is required"
-command -v sox >/dev/null || die "sox is required to resample the sound effects (apt install sox)"
 $PY -c 'import PIL' 2>/dev/null || die "Python Pillow is required (pip install pillow, or apt install python3-pil)"
 echo 'int main(void){return 0;}' > "$HERE/.m32test.c"
 gcc -m32 "$HERE/.m32test.c" -o "$HERE/.m32test" 2>/dev/null || { rm -f "$HERE/.m32test.c"; die "a 32-bit host compiler is required for GoldenEye's texture decompressor (apt install gcc-multilib)"; }
