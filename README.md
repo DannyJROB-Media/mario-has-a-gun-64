@@ -97,6 +97,19 @@ select and adds testing helpers on the D-pad:
 
 Hooks into the original game are kept small and are marked `GE64` in the source.
 
+## License
+
+The original work in this project is dedicated to the **public domain** under
+[CC0 1.0](LICENSE). Use it, fork it, rename it, take it over: no permission or credit needed. This
+covers the hack's code (`src/game/ge64*`, the `GE64` hooks in the original game's files and the
+build changes), the tools in `tools/ge64/`, and the original art (the 3D title logo, title backdrop
+and file select text).
+
+The dedication doesn't extend to the Super Mario 64 and GoldenEye 007 decompilations this is built
+on, or to anything from the games themselves. Those keep whatever status they already have.
+
+Want to help or carry it forward? See [CONTRIBUTING.md](CONTRIBUTING.md).
+
 ## Credits
 
 - **Mario Has a Gun 64** by Danny ([DannyJROB-Media](https://github.com/DannyJROB-Media)), built
